@@ -57,5 +57,11 @@ TagManager:
   - name: Inner ground
     uniqueID: 280214231
     locked: 0
+  - name: Player
+    uniqueID: 4116606293
+    locked: 0
+  - name: Enemy
+    uniqueID: 3079696927
+    locked: 0
   m_RenderingLayers:
   - Default
