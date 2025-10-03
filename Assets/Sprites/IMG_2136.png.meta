@@ -103,10 +103,10 @@ TextureImporter:
       name: IMG_2136_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 139
         y: 0
-        width: 433
-        height: 577
+        width: 128
+        height: 486
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
