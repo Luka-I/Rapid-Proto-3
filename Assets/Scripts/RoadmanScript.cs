@@ -171,16 +171,46 @@ public class RoadmanScript : MonoBehaviour
     public void TakeDamage(int damageAmount)
     {
         health -= damageAmount;
-        if (health <= 0)
+        Debug.Log($"Roadman took {damageAmount} damage! Health: {health}");
+
+        // Optional: Add a hit reaction
+        if (health > 0)
+        {
+            // Play hit animation or flash effect
+            StartCoroutine(HitReaction());
+        }
+        else
         {
             Die();
         }
     }
 
+    private System.Collections.IEnumerator HitReaction()
+    {
+        // Optional: Visual feedback when hit
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+        {
+            Color originalColor = spriteRenderer.color;
+            spriteRenderer.color = Color.red;
+            yield return new WaitForSeconds(0.1f);
+            spriteRenderer.color = originalColor;
+        }
+    }
+
     private void Die()
     {
-        // Handle roadman death (play animation, drop items, etc.)
+        // Handle roadman death
         Debug.Log("Roadman died!");
-        Destroy(gameObject);
+
+        // Play death animation if you have one
+        anim.SetTrigger("Die");
+
+        // Disable collisions and AI
+        Collider2D collider = GetComponent<Collider2D>();
+        if (collider != null) collider.enabled = false;
+
+        // Destroy after a delay to allow animation to play
+        Destroy(gameObject, 2f);
     }
 }
