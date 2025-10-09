@@ -21,12 +21,20 @@ public class RoadmanScript : MonoBehaviour
     private float recoveryTimer = 0f;
 
     private State currentState = State.Idle;
+    private PlayerHP playerHP; // Reference to PlayerHP component
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         anim = GetComponent<Animator>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
+
+        // Get reference to PlayerHP component
+        playerHP = player.GetComponent<PlayerHP>();
+        if (playerHP == null)
+        {
+            Debug.LogError("PlayerHP component not found on player! Make sure your player has the PlayerHP script attached.");
+        }
     }
 
     private void OnDrawGizmosSelected()
@@ -40,6 +48,10 @@ public class RoadmanScript : MonoBehaviour
 
     private void Update()
     {
+        // Don't do anything if player is dead or reference is missing
+        if (playerHP == null || !playerHP.IsAlive())
+            return;
+
         float distance = Vector2.Distance(transform.position, player.position);
         cooldownTimer += Time.deltaTime;
 
@@ -108,27 +120,30 @@ public class RoadmanScript : MonoBehaviour
 
         // Reset cooldown timer
         cooldownTimer = 0f;
-
-        // Perform the actual attack logic
-        PerformStabAttack();
     }
 
     private void PerformStabAttack()
     {
-        // Check if player is still in range when the attack connects
+        // Check if player is still in range and alive when the attack connects
+        if (playerHP == null || !playerHP.IsAlive()) return;
+
         float distance = Vector2.Distance(transform.position, player.position);
         if (distance <= attackRange)
         {
-            // Here you would typically call a method on the player to take damage
-            /*PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage(damage);
-            }*/
+            // Deal damage to the player using PlayerHP component
+            playerHP.TakeDamage(damage);
+            Debug.Log("Roadman stabbed player for " + damage + " damage! Player HP: " + playerHP.GetCurrentHP());
 
             // Optional: Add knockback or other effects
-            Debug.Log("Roadman stabbed player for " + damage + " damage!");
+            // ApplyKnockbackToPlayer();
         }
+    }
+
+    // This method should be called by an Animation Event at the moment the knife would hit
+    public void OnAttackHitFrame()
+    {
+        // This would be called via Animation Event at the precise frame when the knife stabs forward
+        PerformStabAttack();
     }
 
     // This method should be called by an Animation Event at the end of your attack animation
@@ -141,10 +156,31 @@ public class RoadmanScript : MonoBehaviour
         }
     }
 
-    // Optional: You can call this at the moment the knife would hit in the animation
-    public void OnAttackHitFrame()
+    // Optional: Method to apply knockback to player
+    private void ApplyKnockbackToPlayer()
     {
-        // This would be called via Animation Event at the precise frame when the knife stabs forward
-        PerformStabAttack();
+        Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
+        if (playerRb != null)
+        {
+            Vector2 knockbackDirection = (player.position - transform.position).normalized;
+            playerRb.AddForce(knockbackDirection * 5f, ForceMode2D.Impulse);
+        }
+    }
+
+    // Optional: Method to handle when the roadman takes damage
+    public void TakeDamage(int damageAmount)
+    {
+        health -= damageAmount;
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        // Handle roadman death (play animation, drop items, etc.)
+        Debug.Log("Roadman died!");
+        Destroy(gameObject);
     }
 }
