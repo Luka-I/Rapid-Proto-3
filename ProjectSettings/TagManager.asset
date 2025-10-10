@@ -8,6 +8,7 @@ TagManager:
   - Wall
   - Inner ground
   - Enemy
+  - Items
   layers:
   - Default
   - TransparentFX
@@ -19,7 +20,7 @@ TagManager:
   - Wall
   - Inner ground
   - Enemy
-  - 
+  - Items
   - 
   - 
   - 
@@ -56,6 +57,9 @@ TagManager:
     locked: 0
   - name: Inner ground
     uniqueID: 280214231
+    locked: 0
+  - name: Items
+    uniqueID: 2076634817
     locked: 0
   - name: Player
     uniqueID: 4116606293
