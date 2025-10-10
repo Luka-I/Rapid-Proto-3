@@ -15557,6 +15557,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wifebeater Collectible
       objectReference: {fileID: 0}
+    - target: {fileID: 8900323805477146361, guid: be179a099cd1e9a4ebb6197def426b24, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -30,8 +30,7 @@ public class CollectibleManager : MonoBehaviour
         collectedItems.Add(itemId);
         collectedCount++;
 
-        // Save collected state
-        SaveCollectedItems();
+
 
         // Update UI
         UpdateUI();
@@ -66,21 +65,7 @@ public class CollectibleManager : MonoBehaviour
         // For example: play a sound, show particle effect, unlock achievement, etc.
     }
 
-    // Save/Load functionality for persistence between sessions
-    private void SaveCollectedItems()
-    {
-        // Convert HashSet to array for saving
-        string[] collectedArray = new string[collectedItems.Count];
-        collectedItems.CopyTo(collectedArray);
-
-        // Save using PlayerPrefs (consider using a proper save system for larger games)
-        for (int i = 0; i < collectedArray.Length; i++)
-        {
-            PlayerPrefs.SetString($"Collectible_{collectedArray[i]}", "collected");
-        }
-        PlayerPrefs.SetInt("TotalCollected", collectedCount);
-        PlayerPrefs.Save();
-    }
+    
 
     private void LoadCollectedItems()
     {
@@ -110,4 +95,6 @@ public class CollectibleManager : MonoBehaviour
     public int CollectedCount => collectedCount;
     public int TotalCollectibles => totalCollectibles;
     public float CollectionPercentage => totalCollectibles > 0 ? (float)collectedCount / totalCollectibles * 100f : 0f;
+
+    //poistettu saveus
 }
