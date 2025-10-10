@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
@@ -8,10 +8,12 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private bool isGrounded = true;
+    private SpriteRenderer spriteRenderer;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
     void Update()
@@ -26,8 +28,14 @@ public class PlayerController : MonoBehaviour
         else if (Gamepad.current != null)
             moveInput = Gamepad.current.leftStick.x.ReadValue();
 
-        // Apply horizontal movement
+        // Apply horizontal movement (✅ fixed here)
         rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
+
+        // Flip only the sprite
+        if (moveInput > 0)
+            spriteRenderer.flipX = false;
+        else if (moveInput < 0)
+            spriteRenderer.flipX = true;
 
         // Jump (space or gamepad A button)
         if (isGrounded && (Keyboard.current.spaceKey.wasPressedThisFrame ||
