@@ -140,7 +140,7 @@ public class PlayerHP : MonoBehaviour
     // Automatically handle collision with enemy projectiles or enemies
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy") || other.CompareTag("EnemyProjectile"))
+        if (other.CompareTag("Enemy"))
         {
             // You can modify this to get damage amount from the enemy
             TakeDamage(10);
