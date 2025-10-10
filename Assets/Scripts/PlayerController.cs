@@ -3,15 +3,11 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
-    private float speed = 5.0f;
-
-    [SerializeField]
-    private float jumpForce = 7.0f;
+    [SerializeField] private float speed = 5.0f;
+    [SerializeField] private float jumpForce = 7.0f;
 
     private Rigidbody2D rb;
     private bool isGrounded = true;
-
 
     void Start()
     {
@@ -20,11 +16,22 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // Move forward continuously
-        rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
+        // Read movement input
+        float moveInput = 0f;
 
-        // Check jump input via keyboard or gamepad directly
-        if (isGrounded && (Keyboard.current.spaceKey.wasPressedThisFrame || (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame)))
+        if (Keyboard.current.aKey.isPressed)
+            moveInput = -1f;
+        else if (Keyboard.current.dKey.isPressed)
+            moveInput = 1f;
+        else if (Gamepad.current != null)
+            moveInput = Gamepad.current.leftStick.x.ReadValue();
+
+        // Apply horizontal movement
+        rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
+
+        // Jump (space or gamepad A button)
+        if (isGrounded && (Keyboard.current.spaceKey.wasPressedThisFrame ||
+                           (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame)))
         {
             Jump();
         }
@@ -32,15 +39,13 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+        rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         isGrounded = false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
-        {
             isGrounded = true;
-        }
     }
 }
