@@ -36,6 +36,7 @@ public class FlashScriipt : MonoBehaviour
 
             // Disable the canvas
             flashCanvas.enabled = false;
+            Destroy(gameObject);
         }
     }
 }
