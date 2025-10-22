@@ -5,6 +5,7 @@ public class FlashScriipt : MonoBehaviour
     [Header("Flash Settings")]
     public Canvas flashCanvas;
     public float flashDuration = 0.2f;
+    public AudioSource audioSource;
 
     private void Start()
     {
@@ -30,7 +31,7 @@ public class FlashScriipt : MonoBehaviour
         {
             // Enable the canvas
             flashCanvas.enabled = true;
-
+            audioSource.Play();
             // Wait for the specified duration
             yield return new WaitForSeconds(flashDuration);
 
