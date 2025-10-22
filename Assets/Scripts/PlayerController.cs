@@ -1,48 +1,104 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float speed = 5.0f;
-    [SerializeField] private float jumpForce = 7.0f;
+    [SerializeField] private float speed = 5f;
+    [SerializeField] private float jumpForce = 7f;
 
     private Rigidbody2D rb;
     private bool isGrounded = true;
     private SpriteRenderer spriteRenderer;
+    private PlayerAttack playerAttack;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        playerAttack = GetComponent<PlayerAttack>();
     }
 
     void Update()
     {
-        // Read movement input
+        HandleMovement();
+        HandleJump();
+        HandleActions();
+    }
+
+    private void HandleMovement()
+    {
         float moveInput = 0f;
 
-        if (Keyboard.current.aKey.isPressed)
-            moveInput = -1f;
-        else if (Keyboard.current.dKey.isPressed)
-            moveInput = 1f;
-        else if (Gamepad.current != null)
-            moveInput = Gamepad.current.leftStick.x.ReadValue();
+        if (Keyboard.current != null)
+        {
+            if (Keyboard.current.aKey.isPressed) moveInput = -1f;
+            else if (Keyboard.current.dKey.isPressed) moveInput = 1f;
+        }
 
-        // Apply horizontal movement (✅ fixed here)
+        if (Gamepad.all.Count > 0)
+        {
+            var pad = Gamepad.all[0];
+            moveInput = pad.leftStick.x.ReadValue();
+        }
+
         rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
 
-        // Flip only the sprite
-        if (moveInput > 0)
-            spriteRenderer.flipX = false;
-        else if (moveInput < 0)
-            spriteRenderer.flipX = true;
+        if (moveInput > 0) spriteRenderer.flipX = false;
+        else if (moveInput < 0) spriteRenderer.flipX = true;
+    }
 
-        // Jump (space or gamepad A button)
-        if (isGrounded && (Keyboard.current.spaceKey.wasPressedThisFrame ||
-                           (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame)))
+    private void HandleJump()
+    {
+        if (!isGrounded) return;
+
+        bool jumpKeyboard = Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
+        bool jumpGamepad = false;
+
+        foreach (var pad in Gamepad.all)
         {
-            Jump();
+            if (pad.buttonSouth.wasPressedThisFrame) jumpGamepad = true;
         }
+
+        if (jumpKeyboard || jumpGamepad)
+            Jump();
+    }
+
+    private void HandleActions()
+    {
+        if (playerAttack == null) return;
+
+        bool punch = false;
+        bool kick = false;
+
+        if (Mouse.current != null)
+        {
+            punch |= Mouse.current.leftButton.wasPressedThisFrame;
+            kick |= Mouse.current.rightButton.wasPressedThisFrame;
+        }
+
+        foreach (var pad in Gamepad.all)
+        {
+            punch |= pad.buttonEast.wasPressedThisFrame;
+            kick |= pad.buttonNorth.wasPressedThisFrame;
+        }
+
+        foreach (var js in Joystick.all)
+        {
+            foreach (var control in js.allControls)
+            {
+                if (control is ButtonControl btn && btn.wasPressedThisFrame)
+                {
+                    string n = btn.name.ToLower();
+                    if (n.Contains("1") || n.Contains("b")) punch = true;
+                    else if (n.Contains("3") || n.Contains("y")) kick = true;
+                }
+            }
+        }
+
+        if (punch) playerAttack.Punch();
+        if (kick) playerAttack.Kick();
     }
 
     private void Jump()

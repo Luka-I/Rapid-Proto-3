@@ -83,7 +83,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -178361003
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 0660d1deb919e69458465bd3c9e6e10b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -183,6 +183,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   jumpForce: 7
+  punchHitboxPrefab: {fileID: 6537284356492456162}
+  kickHitboxPrefab: {fileID: 6537284356492456162}
+  attackOffset: 1
+  attackDuration: 0.2
 --- !u!95 &3885415023179210958
 Animator:
   serializedVersion: 7

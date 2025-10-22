@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -22,26 +23,53 @@ public class PlayerAttack : MonoBehaviour
 
     void Update()
     {
-        if (Time.time >= nextAttackTime)
+        if (Time.time < nextAttackTime) return;
+
+        bool punch = false;
+        bool kick = false;
+
+        if (Keyboard.current != null)
         {
-            if (Mouse.current.leftButton.wasPressedThisFrame)
+            punch |= Keyboard.current.leftCtrlKey.wasPressedThisFrame;
+            kick |= Keyboard.current.leftAltKey.wasPressedThisFrame;
+        }
+
+        if (Mouse.current != null)
+        {
+            punch |= Mouse.current.leftButton.wasPressedThisFrame;
+            kick |= Mouse.current.rightButton.wasPressedThisFrame;
+        }
+
+        foreach (var pad in Gamepad.all)
+        {
+            punch |= pad.buttonEast.wasPressedThisFrame;
+            kick |= pad.buttonNorth.wasPressedThisFrame;
+        }
+
+        foreach (var js in Joystick.all)
+        {
+            foreach (var control in js.allControls)
             {
-                Punch();
-            }
-            else if (Mouse.current.rightButton.wasPressedThisFrame)
-            {
-                Kick();
+                if (control is ButtonControl btn && btn.wasPressedThisFrame)
+                {
+                    string n = btn.name.ToLower();
+                    if (n.Contains("1") || n.Contains("b")) punch = true;
+                    else if (n.Contains("3") || n.Contains("y")) kick = true;
+                }
             }
         }
+
+        if (punch) Punch();
+        if (kick) Kick();
     }
 
-    private void Punch()
+    public void Punch()
     {
         animator.SetTrigger("Punch");
         nextAttackTime = Time.time + 1f / attackRate;
     }
 
-    private void Kick()
+    public void Kick()
     {
         animator.SetTrigger("Kick");
         nextAttackTime = Time.time + 1f / attackRate;
@@ -77,8 +105,7 @@ public class PlayerAttack : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        if (attackPoint == null)
-            return;
+        if (attackPoint == null) return;
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(attackPoint.position, punchRange);
