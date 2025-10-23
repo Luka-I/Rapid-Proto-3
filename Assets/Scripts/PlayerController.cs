@@ -45,8 +45,27 @@ public class PlayerController : MonoBehaviour
 
         rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
 
+        // Store previous flip state to detect changes
+        bool wasFlipped = spriteRenderer.flipX;
+
         if (moveInput > 0) spriteRenderer.flipX = false;
         else if (moveInput < 0) spriteRenderer.flipX = true;
+
+        // If flip state changed, update attack point position
+        if (wasFlipped != spriteRenderer.flipX && playerAttack != null && playerAttack.attackPoint != null)
+        {
+            FlipAttackPoint();
+        }
+    }
+
+    private void FlipAttackPoint()
+    {
+        if (playerAttack.attackPoint != null)
+        {
+            // Flip the attack point's local position on the X-axis
+            Vector3 currentPos = playerAttack.attackPoint.localPosition;
+            playerAttack.attackPoint.localPosition = new Vector3(-currentPos.x, currentPos.y, currentPos.z);
+        }
     }
 
     private void HandleJump()
