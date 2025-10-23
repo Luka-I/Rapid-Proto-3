@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class PlayerHP : MonoBehaviour
 {
@@ -21,6 +22,8 @@ public class PlayerHP : MonoBehaviour
 
     private bool isDead = false;
     private float invincibilityTimer = 0f;
+
+    public string SceneToLoad;
 
     void Start()
     {
@@ -88,6 +91,7 @@ public class PlayerHP : MonoBehaviour
     {
         isDead = true;
         OnDeath?.Invoke();
+        SceneManager.LoadScene(SceneToLoad);
 
         // You can add death logic here, like:
         // - Play death animation

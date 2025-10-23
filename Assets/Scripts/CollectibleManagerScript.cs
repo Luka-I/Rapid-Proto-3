@@ -11,8 +11,9 @@ public class CollectibleManager : MonoBehaviour
     [SerializeField] private TMP_Text collectibleText;
 
     private int collectedCount = 0;
+    public bool CanLeave { get; private set; }
 
-    private void Start()
+private void Start()
     {
         // Always start fresh
         collectedCount = 0;
@@ -42,9 +43,11 @@ public class CollectibleManager : MonoBehaviour
         }
     }
 
-    private void OnAllCollectiblesCollected()
+    public void OnAllCollectiblesCollected()
     {
         Debug.Log("All collectibles collected!");
+        CanLeave = true;
+        
     }
 
     // Method to reset all collectibles
